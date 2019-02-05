@@ -316,11 +316,17 @@ One-to-one or one-to-many
 
 ![PubSub](./img/pubsubchannel.gif)
 
-- Invalid message / Deadletter
+- Invalid messagechannel
 
 ![Invalid](./img/invalidchannel.gif)
 
 - Deadletter channel
+
+![Invalid](./img/deadletter.gif)
+
+- Quality of service channel
+
+![Invalid](./img/qoschannel.gif)
 
 
 

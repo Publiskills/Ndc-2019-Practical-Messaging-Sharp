@@ -380,15 +380,23 @@ One-to-one or one-to-many
 
 ## Competing consumers
 
+![Competing consumers](./img/competing.gif)
+
 We cannot process fast enough and we have high latency
 
 Eventual consistency at high latency looks like network partition
 
 A single consumer is bad - if it fails, that failure cascades to callers
 
-Ordering ...
+Ordering is an issue as consumers run at different rates. Two main solutions:
+1. Sorting into order, using the queue, not processing out of order. This can be less performant than having no competing consumers.
+2. Ensure messages can run when out-of-order i.e. idempotency
 
 ## Pipes and filters
+
+![Pipes](./img/pipe.gif)
+
+![Pipes and filters](./img/pipefilter.png)
 
 ### Coding time : Pipes and filters
 
@@ -396,15 +404,37 @@ Ordering ...
 
 ### Parallel pipelines
 
+If the time taken for a consumer to process a given task is long, there are negative consequences.
+
+The queue backs up, leading to high latency, which appears as a partition
+
+It is difficult to understand progress.
+
+Scaling becomes ‘all or nothing.’ 
+
+### Parallel pipelines pattern
+
+The Parallel Pipelines Pattern uses a Pipes and Filters approach to Decoupled Invocation.
+
+- The task is broken into sub-tasks or filter steps.  Usually by the first consumer.
+- Communication between filter steps is by a message queue, each filter step runs as an independent process.
+- A filter step may use the competing consumers pattern – so resources can be tailored to the needs of each step.
+- Monitoring the queue length indicates the performance of relative steps, helping to identify bottlenecks.
+- Note that overall latency is increased, you have multiple queues, but you benefit in throughput.
+
 ### Routers
 
 #### Content based router
 
 Router decide which routee should receive the message according to the content
 
+![Content based router](./img/contentbased.gif)
+
 #### Dynamic router
 
 Routees inform the router about what they should receive through a control channel
+
+![Dynamic router](./img/dynamic.gif)
 
 #### Splitter
 
@@ -412,25 +442,35 @@ Split a message into many and send each of them to a routee
 
 Avoid big payload, store big content externally and pass reference if necessary (blob storage...)
 
+![Splitter](./img/splitter.gif)
+
 #### Aggregator
 
-inverse of a splitter => aggregate messages
+Opposite of a splitter => aggregate messages
 
 Needs an internal buffer
+
+![Aggregator](./img/aggregator.gif)
 
 #### Resequencer
 
 Reorder correlated messages
 
+![Resequencer](./img/resequencer.gif)
+
 #### Recipient list
 
 Kinda like a pub sub but with multiple channels (like topics)
+
+![Recipient](./img/recipient.gif)
 
 #### Routing slip
 
 Route message according to Slip
 
 Each message know its steps (sequence of routes)
+
+![Routing slip](./img/routingslip.gif)
 
 #### Process manager
 
@@ -440,17 +480,37 @@ Define a workflow on a central point
 
 Low testability
 
+![Process manager](./img/processmanager.gif)
+
+## Transformations
+
 #### Message translator
 
+![](./img/translator.gif)
+
 #### Content enricher
+
+![](./img/enricher.gif)
+
+## Management
 
 #### Control bus
 
 Can use heterogenous tech to implement control bus (monitoring for exemple)
 
+![](./img/controlbus.gif)
+
 #### Message store
 
+![](./img/msgstore.gif)
+
+## Reliability
+
+### Durability and persistence
+
 #### Durable Subscriber
+
+![](./img/durablesubscriber.gif)
 
 ### Error handling strategies for coupled systems
 
@@ -458,6 +518,8 @@ Can use heterogenous tech to implement control bus (monitoring for exemple)
 2. Retry
 3. Compensating
 4. Transaction coordinator (Prepare/Commit/Feedback)
+
+![](./img/error.png)
 
 ### RMQ cluster
 

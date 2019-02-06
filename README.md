@@ -326,37 +326,53 @@ One-to-one or one-to-many
 
 - Quality of service channel
 
-![Invalid](./img/qoschannel.gif)
+![Qos](./img/qoschannel.gif)
 
 
 
-... endpoint
+### Endpoints
 
-### Messaging mapper
+- Message Endpoint
 
-### Polling consumer
+![Message endpoint](./img/msgendpoint.gif)
 
-Consume every X times
+- Messaging Gateway
 
-Connection can be idle
+![Messaging Gateway](./img/msggateway.gif)
 
-Clients are using more CPU
+- Messaging Mapper
 
-Server is using more CPU
+![Messaging Mapper](./img/msgmapper.gif)
 
-### Event Driven Consumer
+- Polling Consumer
 
-Keep connections open
+![Polling Consumer](./img/pollingconsumer.gif)
 
-Less CPU on client side
+> Consume every X times
+>
+> Connection can be idle
+>
+> Clients are using more CPU
+>
+> Server is using more CPU
 
-More CPU on the server side
+- Event Driven Consumer
 
-Availability to use back pressure and throttling
+![Event Driven Consumer](./img/eventdrivenconsumer.gif)
 
-### Service Activator
+> Keep connections open
+>
+> Less CPU on client side
+>
+> More CPU on the server side
+>
+> Availability to use back pressure and throttling
 
-Requestor / Replier (like MassTransit)
+- Service Activator
+
+![Service Activator](./img/serviceactivator.gif)
+
+> Requestor / Replier (like MassTransit)
 
 ### Coding time : Polling consumer
 

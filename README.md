@@ -14,13 +14,13 @@ COM, SOAP, ESB, REST, micro services (throwable SOA (original) - Fred George, ac
 
 https://www.goparamore.io/
 
-![Brighter](./img/brighter.png) 
+![Brighter](./img/Brighter.png) 
 
 ## Book
 
 Enterprise integration pattern
 
-![Enterprise integration pattern](./img/book.jpg) 
+![Enterprise integration pattern](./img/Book.jpg) 
 
 ## Github
 

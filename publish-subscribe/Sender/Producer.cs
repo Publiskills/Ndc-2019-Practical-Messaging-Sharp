@@ -9,7 +9,7 @@ namespace Sender
         {
             using (var channel = new PublishSubscribeChannel(ChannelType.Publisher))
             {
-                string message = "Hello World!";
+                string message = $"Hello World! {DateTime.UtcNow.ToLongTimeString()}";
                 channel.Send(message);
                 Console.WriteLine("Sent message {0}", message);
             }

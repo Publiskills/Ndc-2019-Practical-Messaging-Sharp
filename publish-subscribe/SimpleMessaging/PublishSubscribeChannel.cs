@@ -46,13 +46,20 @@ namespace SimpleMessaging
             _channel = _connection.CreateModel();
             
             // TODO: On the channel declare a non-durable fanout exchange 
+            _channel.ExchangeDeclare(ExchangeName, ExchangeType.Fanout, false);
+            
             if (channelType == ChannelType.Subscriber)
             {
                 //make the queue exclusive and autoDelete as it exists only for this subscriber; a publisher does not 
                 //create as we would not use the queue so created for that client, hence the flag in the constructor
                 //TODO: declare a queue but don't pass a queuename
+                var queue = _channel.QueueDeclare(string.Empty, false, true, true);
+
                 //TODO: Grab the randonly genereated queue name from the resut of the queue creation operation
+                _queueName = queue.QueueName;
+
                 //TODO: Bind the queue name to the exchange with the ALL (empty string above) routing key
+                _channel.QueueBind(_queueName, ExchangeName, ALL);
             }
         }
 
@@ -67,7 +74,9 @@ namespace SimpleMessaging
                 throw new InvalidOperationException("You cannot send from a consumer");
             
             var body = Encoding.UTF8.GetBytes(message);
+            
             //TODO: Publish to the exchange, using the ALL routingkey
+            _channel.BasicPublish(ExchangeName, ALL, null, body: body);
         }
 
         /// <summary>

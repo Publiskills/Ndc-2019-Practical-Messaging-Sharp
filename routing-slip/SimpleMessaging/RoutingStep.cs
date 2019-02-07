@@ -45,8 +45,6 @@ namespace SimpleMessaging
                 {
                     ct.ThrowIfCancellationRequested();
                     
-                   
-                    
                     using (var inPipe = new DataTypeChannelConsumer<T>(_thisRoutingKey, _messageDeserializer, _hostName))
                     {
                         while (true)
@@ -68,6 +66,23 @@ namespace SimpleMessaging
                              * 
                              * 
                              */
+                            var msg = inPipe.Receive();
+                            if (msg != null)
+                            {
+                                var nextStepMessage = _operation.Execute(msg);
+                                nextStepMessage.Steps[msg.CurrentStep].Completed = true;
+                                var nextStepId = msg.CurrentStep + 1;
+                                if (msg.Steps.TryGetValue(nextStepId, out var nextStep))
+                                {
+                                    var nextRoutingKey = nextStep.RoutingKey;
+                                    nextStepMessage.CurrentStep = nextStepId;
+                                    using (var outPipe =
+                                        new DataTypeChannelProducer<T>(nextRoutingKey, _messasgeSerializer))
+                                    {
+                                        outPipe.Send(nextStepMessage);
+                                    }
+                                }
+                            }
                             else
                             {
                                 Task.Delay(1000, ct).Wait(ct); //yield

@@ -78,6 +78,9 @@ namespace SimpleMessaging
             //In order to do guaranteed delivery, we want to use the broker's message store to hold the message, 
             //so that it will be available even if the broker restarts
             // TODO: Set the basic properties to ensure that we have persistent messages
+            var props = _channel.CreateBasicProperties();
+            props.Persistent = true;
+            
             _channel.BasicPublish(exchange: ExchangeName, routingKey: _routingKey, basicProperties: props, body: body);
         }
 

@@ -53,16 +53,29 @@ namespace SimpleMessaging
             var invalidRoutingKey = "invalid." + routingKey;
             var invalidMessageQueueName = invalidRoutingKey;
             
+            _channel.ExchangeDeclare(ExchangeName, ExchangeType.Direct, durable: false);
             //TODO create an argument dictionary, that has arguments for the invalid message exchange and routing key
+            var arguments = new Dictionary<string, object>()
+            {
+                {"x-dead-letter-exchange", InvalidMessageExchangeName},
+                {"x-dead-letter-routing-key", invalidRoutingKey}
+            };
            
             //TODO: Create our consumer queue, but add the arguments that hook up the invalid message queue (tip might be calle deal letter in RMQ docs)
+            _channel.QueueDeclare(_queueName, false, false, false, arguments);
+            
             _channel.QueueBind(queue:_queueName, exchange: ExchangeName, routingKey: routingKey);
             
             //declare a queue for invalid messages off an invalid message exchange
             //messages that we nack without requeue will go here
             // TODO; Declare an invalid message queue exchange, direct and durable
+            _channel.ExchangeDeclare(InvalidMessageExchangeName, ExchangeType.Direct, durable: true);
+            
             // TODO: declare an invalid message queue, durable
+            _channel.QueueDeclare(invalidMessageQueueName, true, false, false);
+
             // TODO: bind the queue to the exchange
+            _channel.QueueBind(invalidMessageQueueName, InvalidMessageExchangeName, invalidRoutingKey);
  
         }
 

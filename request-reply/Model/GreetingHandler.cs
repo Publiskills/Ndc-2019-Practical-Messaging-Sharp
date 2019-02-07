@@ -15,7 +15,7 @@ namespace Model
                 return new GreetingResponse
                 {
                     CorrelationId = message.CorrelationId,
-                    Result = $"Received Greeting {message.Salutation}"
+                    Result = $"Received Greeting {message.Salutation} - and this is the response !!!"
                 };
             }
 

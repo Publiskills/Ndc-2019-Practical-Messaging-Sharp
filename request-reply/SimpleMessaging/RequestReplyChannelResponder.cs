@@ -44,6 +44,12 @@ namespace SimpleMessaging
                  * Publish th othe default exchange hint: "" where routing key = queue name
                  * 
                  */
+                
+                var replyBasicProperties = _channel.CreateBasicProperties();
+                replyBasicProperties.CorrelationId = response.CorrelationId.ToString();
+                byte[] responseBytes = Encoding.UTF8.GetBytes(_messageSerializer(response));
+                //Because this is the default exchange, the routing key is the queue name
+                _channel.BasicPublish("", replyQueuename, replyBasicProperties, responseBytes);
                
                 Console.WriteLine("Responded on queue {0} at {1}", replyQueuename, DateTime.UtcNow);
      

@@ -96,15 +96,28 @@ namespace SimpleMessaging
             //queue name this means we avoid any collisions
             
             // TODO: Declare a queue for replies, non-durable, exclusive, auto-deleting. no queue name
+            var replyQueue = _channel.QueueDeclare();
+
+
             // TODO: Assign auto generated queuename to variable for later use
-            
+            var replyQueueName = replyQueue.QueueName;
+
             // TODO: serialize the body, and turn it into a byte[] with URF8 encoding
+            var body = Encoding.UTF8.GetBytes(_messageSerializer(message));
+            
             //In order to do guaranteed delivery, we want to use the broker's message store to hold the message, 
             //so that it will be available even if the broker restarts
             // TODO: Create basic properties for the channel
+            var basicProperties = _channel.CreateBasicProperties();
+
             // TODO: Make the message persistent
+            basicProperties.Persistent = true;
+
             // TODO: Set reply to on the props to the random queue name from above
+            basicProperties.ReplyTo = replyQueueName;
+
             // TODO: Publish to the consumer on ExchangeName with _routingKey and props and body
+            _channel.BasicPublish(ExchangeName, _routingKey, basicProperties, body);
             
             //now we want to listen
             /*
@@ -120,7 +133,38 @@ namespace SimpleMessaging
              * delete the reply queue when done
              * return the response
              */
-       }
+            
+            TResponse response = null;
+            var timeout = DateTime.UtcNow.AddMilliseconds(timeoutInMilliseconds);
+            while (DateTime.UtcNow < timeout)
+            {
+                var result = _channel.BasicGet(replyQueueName, false);
+                if (result != null)
+                {
+                    try
+                    {
+                        response = _messageDeserializer(Encoding.UTF8.GetString(result.Body));
+                        _channel.BasicAck(deliveryTag: result.DeliveryTag, multiple: false);
+                    }
+                    catch (JsonSerializationException e)
+                    {
+                        Console.WriteLine($"Error processing the incoming message {e}");
+                        //remove from the queue
+                        _channel.BasicAck(deliveryTag: result.DeliveryTag, multiple: false);
+                    }
+
+                    break;
+                }
+                else
+                {
+                    Task.Delay(TimeSpan.FromMilliseconds(Math.Round((double)timeoutInMilliseconds / 5)));
+                }
+            }
+            _channel.QueueDeleteNoWait(replyQueueName);
+            
+ 
+            return response;
+        }
 
         public void Dispose()
         {

@@ -40,6 +40,20 @@ namespace SimpleMessaging
                              *     create a RequestReplyChannelResponder
                              *     respond to the request, with the response from the handler
                              */
+                            var request = channel.Receive();
+                            if ( request != null)
+                            {
+
+                                var response = _messageHandler.Handle(request);
+                                
+                                var responder = new RequestReplyChannelResponder<TResponse>(
+                                    _messageSerializer 
+                                );
+                               
+                                responder.Respond(request.ReplyTo, response);
+                            }
+                            else
+                                Console.WriteLine("Did not receive message"); 
                             
                             
                             Task.Delay(1000, ct).Wait(ct); //yield

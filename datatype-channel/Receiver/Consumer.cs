@@ -9,7 +9,7 @@ namespace Sender
     {
         static void Main(string[] args)
         {
-            using (var channel = new DataTypeChannelConsumer<Greeting>(messageBody =>/*TODO: deserialize the message*/))
+            using (var channel = new DataTypeChannelConsumer<Greeting>(JsonConvert.DeserializeObject<Greeting>))
             {
                 var greeting = channel.Receive();
                 if (greeting != null)

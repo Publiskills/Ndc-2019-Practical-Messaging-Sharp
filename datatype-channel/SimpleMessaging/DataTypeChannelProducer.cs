@@ -38,7 +38,7 @@ namespace SimpleMessaging
             _channel = _connection.CreateModel();
             
             //Because we are point to point, we are just going to use queueName for the routing key
-            _routingKey = nameof(T);
+            _routingKey = typeof(T).Name;
             //just use the routing key as the queue name; we are still point-to-point
             var queueName = _routingKey;
             
@@ -55,6 +55,7 @@ namespace SimpleMessaging
         public void Send(T message)
         {
             //TODO: Serialize the message Tip, convert to UTF8
+            var body = Encoding.UTF8.GetBytes(_messageSerializer(message));
             _channel.BasicPublish(exchange: ExchangeName, routingKey: _routingKey, basicProperties: null, body: body);
         }
 

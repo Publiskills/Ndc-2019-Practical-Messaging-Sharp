@@ -1,4 +1,4 @@
-# Ndc 2019 - Practical messaging (Ian cooper - @ICooper)
+# My notes from "Ndc 2019 - Practical messaging (Ian cooper - @ICooper)"
 
 A tutorial for teaching basic messaging patterns
 

@@ -4,7 +4,7 @@ A tutorial for teaching basic messaging patterns
 
 Exercices can be found here : [Exercices branch](../../tree/exercises)
 
-My solutions can be found here : [Solutions branch](../tree/sandbox)
+My solutions can be found here : [Solutions branch](../../tree/sandbox)
 
 # Day #1
 

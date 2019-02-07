@@ -53,8 +53,30 @@ namespace SimpleMessaging
                      *     else
                      *         delay by 1ms
                      *     check for a cancelled token
-                     * displose of the consumer
+                     * dispose of the consumer
                      */
+                    
+                    using (var inPipe = new DataTypeChannelConsumer<TIn>(_messageDeserializer, _hostName))
+                    {
+                        using (var outPipe = new DataTypeChannelProducer<TOut>(_messasgeSerializer, _hostName))
+                        {
+                            while (true)
+                            {
+                                var inMessage = inPipe.Receive();
+                                if (inMessage != null)
+                                {
+                                    outPipe.Send(_operation.Execute(inMessage));
+                                }
+                                else
+                                {
+                                    Task.Delay(1000, ct).Wait(ct); //yield
+                                }
+
+                                ct.ThrowIfCancellationRequested();
+                            }
+                        }
+                    }
+                    
                }, ct
             );
             return task;
